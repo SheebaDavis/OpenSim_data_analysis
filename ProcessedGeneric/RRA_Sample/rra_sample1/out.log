@@ -1,0 +1,38 @@
+Preparing to run RRATool.
+AbstractTool rra_sample1 loading model '..\..\Scaling_Sample\GenericScaledModel_StrengthScaled_sample.osim'
+Loaded model model from file ..\..\Scaling_Sample\GenericScaledModel_StrengthScaled_sample.osim
+Couldn't find file 'r_pelvis.vtp'.
+Couldn't find file 'l_pelvis.vtp'.
+Couldn't find file 'sacrum.vtp'.
+Couldn't find file 'femur_r.vtp'.
+Couldn't find file 'tibia_r.vtp'.
+Couldn't find file 'fibula.vtp'.
+Couldn't find file 'patella_r.vtp'.
+Couldn't find file 'talus.vtp'.
+Couldn't find file 'foot.vtp'.
+Couldn't find file 'bofoot.vtp'.
+Couldn't find file 'femur_l.vtp'.
+Couldn't find file 'tibia_l.vtp'.
+Couldn't find file 'l_fibula.vtp'.
+Couldn't find file 'patella_l.vtp'.
+Couldn't find file 'l_talus.vtp'.
+Couldn't find file 'l_foot.vtp'.
+Couldn't find file 'l_bofoot.vtp'.
+Couldn't find file 'hat_spine.vtp'.
+Couldn't find file 'hat_jaw.vtp'.
+Couldn't find file 'hat_skull.vtp'.
+Couldn't find file 'hat_ribs.vtp'.
+Adding force object set from ..\..\..\..\..\Generic\rraActuators.xml
+Running tool rra_sample1.
+ExternalLoads 'WBDS01walkT01' was renamed and is being reset to 'externalloads'.
+
+
+ taskSet size = 23
+
+ExternalForce::externalforce
+Data source being set to DataRate=300.000000
+
+Exception:
+  ExternalForce: Could not find body '' to apply force to.
+
+

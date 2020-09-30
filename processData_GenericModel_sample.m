@@ -546,7 +546,7 @@ scaledModelMuscle.print('GenericScaledModel_StrengthScaled_sample.osim');
 %% Inverse kinematics
 
 %Navigate up and create a directory to store IK results
-cd('..'); mkdir('IK_sample'); cd('IK_sample'); ikDir = [pwd,'\'];
+cd('..'); mkdir('IK_Sample'); cd('IK_Sample'); ikDir = [pwd,'\'];
 
 %Initialise IK tool
 ikTool = InverseKinematicsTool();
@@ -558,7 +558,7 @@ ikTool.setName(trialName);
 ikTool.setModel(scaledModelMuscle);
 
 %Set task set
-ikTool.set_IKTaskSet(IKTaskSet('..\..\..\..\GenericMSM\ikTasks.xml'));
+ikTool.set_IKTaskSet(IKTaskSet('..\..\..\..\Generic\ikTasks.xml'));
 
 %Set marker file
 [~,trialName] = fileparts(gaitFile);
@@ -576,19 +576,19 @@ ikTool.set_marker_file(['..\..\Gait\',trialName,'.trc']);
 %identify from a threshold from the vertical GRF. These forces can be
 %grabbed from the current trials .mot file
 gaitGRF = TimeSeriesTable(['..\..\Gait\',trialName,'_grf.mot']);
-vGRF = gaitGRF.getDependentColumn('ground_force_vy');
+vGRF = gaitGRF.getDependentColumn('ground_force_vy2');
 %Loop through and extract data to a matrix for ease of use
 for gg = 0:vGRF.size()-1
     vGRF_data(gg+1) = vGRF.get(gg);
 end
 clear gg
-
-%Find the first instance where the vertical GRF is > 20N
-startGRFind = find(vGRF_data > 20,1);
+%Find the first instance where the vertical GRF is > 20N. Gives the value
+%of index.
+startGRFind = find(vGRF_data > 100,1);
 
 %Find where GRF returns below 50N following the start point
-endGRFind = find(vGRF_data(startGRFind:end) < 20,1) + startGRFind;
-
+midGRFind = find(vGRF_data(startGRFind:end) < 100,1) + startGRFind;
+endGRFind = find(vGRF_data(midGRFind:end) > 100,1) + midGRFind;
 %Identify the times associated with these indices in the GRF data
 startTime = gaitGRF.getIndependentColumn().get(startGRFind-1);
 endTime = gaitGRF.getIndependentColumn().get(endGRFind-1);
@@ -628,7 +628,7 @@ ikTool.run();
 %NOTE: subtalar angle is currently unlocked, but mtp angle is locked...
 
 %Navigate and create an RRA directory
-cd('..'); mkdir('RRA_sample'); cd('RRA_sample'); rraDir = [pwd,'\'];
+cd('..'); mkdir('RRA_Sample'); cd('RRA_Sample'); rraDir = [pwd,'\'];
 
 %Initialise RRA Tool
 rraTool = RRATool();
@@ -646,11 +646,11 @@ rraTool.setReplaceForceSet(true);
 %here creates an empty ArrayStr – so it has no ‘strings’ in it. Because
 %there’s nothing in it, we set the first string at index 0.
 forceSetFiles = ArrayStr();
-forceSetFiles.set(0,'..\..\..\..\..\GenericMSM\rraActuators.xml');
+forceSetFiles.set(0,'..\..\..\..\..\Generic\rraActuators.xml');
 rraTool.setForceSetFiles(forceSetFiles);
 
 %Set tracking tasks file
-rraTool.setTaskSetFileName('..\..\..\..\..\GenericMSM\rraTasks.xml');
+rraTool.setTaskSetFileName('..\..\..\..\..\Generic\rraTasks.xml');
 
 %Set a low pass filter frequency on the kinematics data (12Hz is OK for
 %running I think...)
@@ -685,16 +685,16 @@ for rr = 1:3
     if rr == 1
         
         %Use IK data
-        rraTool.setDesiredKinematicsFileName(['..\..\IK_sample\',trialName,'_ik_sample.mot']);
+        rraTool.setDesiredKinematicsFileName(['..\..\IK_Sample\',trialName,'_ik_sample.mot']);
         
         %Set initial and final time
         %You need to use the IK first and last times here as I don't think the tool
         %likes if the IK data doesn't have the times you put in
-        rraTool.setStartTime(Storage(['..\..\IK_sample\',trialName,'_ik_sample.mot']).getFirstTime());
-        rraTool.setFinalTime(Storage(['..\..\IK_sample\',trialName,'_ik_sample.mot']).getLastTime());
+        rraTool.setStartTime(Storage(['..\..\IK_Sample\',trialName,'_ik_sample.mot']).getFirstTime());
+        rraTool.setFinalTime(Storage(['..\..\IK_Sample\',trialName,'_ik_sample.mot']).getLastTime());
         
         %Set to original scaled model
-        rraTool.setModelFilename('..\..\Scaling\GenericScaledModel_StrengthScaled_sample.osim');
+        rraTool.setModelFilename('..\..\Scaling_Sample\GenericScaledModel_StrengthScaled_sample.osim');
     
     else
         
@@ -769,9 +769,9 @@ for rr = 1:3
     %the adjusted body (the torso in our case).
     outlog = fileread('out.log');
     massChange = str2double(outlog(regexpi(outlog, 'total mass change: ', 'end'):regexpi(outlog, 'total mass change: .?[0-9]+[.][0-9]+', 'end')));
-    disp(['RRA_sample',num2str(rr),' dMass = ', num2str(massChange)])
+    disp(['RRA_Sample',num2str(rr),' dMass = ', num2str(massChange)])
     dCOM = outlog(regexpi(outlog, 'Mass Center \(COM\) adjustment:', 'end'):regexpi(outlog, 'Mass Center \(COM\) adjustment: .+]', 'end'));
-    disp(['RRA_sample',num2str(rr),' dCOM = ', dCOM])
+    disp(['RRA_Sample',num2str(rr),' dCOM = ', dCOM])
     
     %Apply the mass changes to the model using the convenience function
     osimModel_rraMassChanges = Model(rraTool.getModelFilename());
